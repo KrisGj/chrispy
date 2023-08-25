@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "chrispy"
+version = "0.1.0"
+description = "A dummy Python repository to mess around in."
+authors = ["KrisGj <chris.gjurgjinoski@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Flask = "^2.3.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
