@@ -1,7 +1,4 @@
-.PHONY: help start stop
-
-IMAGE_NAME = chrispy
-CONTAINER_NAME = chrispy-container
+.PHONY: help build run start stop shell logs
 
 default: help
 
@@ -10,15 +7,19 @@ help: ## Shows a list of all the available commands.
 	@fgrep -h " ## " $(MAKEFILE_LIST) | fgrep -v fgrep | sed -Ee 's/([a-z.]*):[^#]*##(.*)/\1##\2/' | column -t -s "##"
 	@echo
 
-build: ## Builds the Docker image for the application.
-	docker build -t $(IMAGE_NAME) .
+build: ## Builds the Docker image for the application using docker-compose.
+	docker compose build
 
-start: build ## Starts the application.
-	docker run -p 5000:80 --name $(CONTAINER_NAME) $(IMAGE_NAME)
+run: start logs ## Starts the application and streams logs
 
-stop: ## Stops the running application.
-	docker stop $(CONTAINER_NAME)
-	docker rm $(CONTAINER_NAME)
+start: ## Starts the application using docker-compose.
+	docker compose up --build -d
+
+stop: ## Stops the running application using docker-compose.
+	docker compose down
 
 shell: ## Shells into a running application Docker container.
-	docker exec -it $(CONTAINER_NAME) /bin/bash
+	docker exec -it chrispy /bin/bash
+
+logs: ## Follows the logs from the container.
+	docker compose logs -f

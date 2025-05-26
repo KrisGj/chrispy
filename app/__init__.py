@@ -1,8 +1,12 @@
 from flask import Flask
 
-app = Flask(__name__)
+from app.health import blueprint as health_blueprint
 
 
-@app.route('/')
-def hello():
-    return 'Hello, Flask!'
+def create_app() -> Flask:
+    app: Flask = Flask(__name__)
+
+    # Register blueprints
+    app.register_blueprint(blueprint=health_blueprint)
+
+    return app
