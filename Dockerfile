@@ -1,24 +1,29 @@
-# Use an official Python runtime as a parent image
-FROM python:3.11.4-slim-bullseye
+# Use official slim Python image
+FROM python:3.13.3-slim-bullseye
 
-# Set the working directory to /app
-WORKDIR /app
+# Set Poetry version
+ENV FLASK_APP=web:app
+ENV POETRY_VERSION=2.1.1
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Set working directory
+WORKDIR /usr/src/app
 
 # Install Poetry
-RUN pip install --no-cache-dir poetry
+RUN pip install "poetry==$POETRY_VERSION" --no-cache-dir && \
+    poetry config virtualenvs.create false && \
+    poetry config installer.max-workers 1
 
-# Install project dependencies
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+# Copy dependency files first (enables layer caching)
+COPY pyproject.toml poetry.lock ./
 
-# Make port 80 available to the world outside this container
+# Install dependencies (no dev, no cache, no root package install)
+RUN poetry install --no-interaction --no-root --no-ansi --no-cache
+
+# Copy the full app source
+COPY . .
+
+# Expose port
 EXPOSE 80
 
-# Define environment variable for Flask
-ENV FLASK_APP=app/__init__.py
-
-# Run app.py when the container launches
-CMD ["flask", "run", "--host=0.0.0.0", "--port=80"]
+# Define the default command
+CMD ["gunicorn", "-b", "0.0.0.0:80", "web:app"]
