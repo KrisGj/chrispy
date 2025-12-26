@@ -1,5 +1,5 @@
 # Use official slim Python image
-FROM python:3.13.3-slim-bullseye
+FROM python:3.13.6-slim-bullseye
 
 # Set Poetry version
 ENV FLASK_APP=web:app
