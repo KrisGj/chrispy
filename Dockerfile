@@ -3,10 +3,17 @@ FROM python:3.13.6-slim-bullseye
 
 # Set Poetry version
 ENV FLASK_APP=web:app
-ENV POETRY_VERSION=2.1.1
+ENV POETRY_VERSION=2.2.1
 
 # Set working directory
 WORKDIR /usr/src/app
+
+# Install system dependencies needed by psycopg
+RUN apt-get update && apt-get install -y \
+    libpq5 \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
 RUN pip install "poetry==$POETRY_VERSION" --no-cache-dir && \
